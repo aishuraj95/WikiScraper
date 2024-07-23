@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
+import json
+import csv
 
 def is_valid_wiki_url(url):
     """
@@ -60,6 +62,24 @@ def main():
         return
 
     links = scrape_links(url, cycles)
+    
+    # Write results to JSON
+    results = {
+        "total_links_found": len(links),
+        "unique_links_found": len(links),
+        "links": list(links)
+    }
+
+    with open('results.json', 'w') as json_file:
+        json.dump(results, json_file, indent=4)
+    
+    # Write results to CSV
+    with open('results.csv', 'w', newline='') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(['link'])
+        for link in links:
+            writer.writerow([link])
+    
     print(f"Found {len(links)} unique links:")
     for link in links:
         print(link)
